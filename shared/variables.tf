@@ -1,10 +1,12 @@
 variable "app_name" {
   description = "Application name"
+  default     = "liam-aws-infrastructure"
 }
 
 variable "environment" {
   description = "The application environment, used to tag the resources, e.g. `acme-web-staging`"
   type        = string
+  default     = "prod"
 }
 
 variable "image_limit" {
@@ -15,11 +17,13 @@ variable "image_limit" {
 variable "owner" {
   description = "The owner of the infrastructure, used to tag the resources, e.g. `acme-web`"
   type        = string
+  default     = "Liam"
 }
 
 variable "namespace" {
   description = "The namespace for the application infrastructure on AWS, e.g. acme-web"
   type        = string
+  default     = "liam-aws-infrastructure-prod"
 }
 
 variable "region" {
