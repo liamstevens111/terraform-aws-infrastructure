@@ -32,7 +32,7 @@ module "rds" {
   source                 = "../modules/db"
   username               = var.rds_username
   db_password            = var.rds_password
-  namespace              = local.namespace
+  namespace              = "${var.app_name}${var.environment}"
   instance_class         = var.rds_instance_type
   subnet_ids             = module.network.public_subnet_ids
   vpc_security_group_ids = [module.network.rds_security_group_id]
