@@ -3,7 +3,7 @@ terraform {
     organization = "liam-new-org"
 
     workspaces {
-      name = "terraform-aws-infrastructure-shared"
+      name = "aws-infrastructure-shared"
     }
   }
 
