@@ -20,12 +20,6 @@ variable "owner" {
   default     = "Liam"
 }
 
-variable "namespace" {
-  description = "The namespace for the application infrastructure on AWS, e.g. acme-web"
-  type        = string
-  default     = "liam-aws-infrastructure-prod"
-}
-
 variable "region" {
   description = "AWS region"
   type        = string

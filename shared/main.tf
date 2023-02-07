@@ -14,5 +14,5 @@ terraform {
 module "ecr" {
   source = "../modules/ecr"
 
-  namespace = var.namespace
+  namespace = var.app_name
 }

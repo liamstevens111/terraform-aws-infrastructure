@@ -3,23 +3,23 @@ data "aws_ecr_repository" "repo" {
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "${var.environment}-cluster"
+  name = "${var.namespace}-cluster"
 
   tags = {
-    Name = "${var.environment}-ecs"
+    Name = "${var.namespace}-ecs"
   }
 }
 
 resource "aws_cloudwatch_log_group" "ecs-log-group" {
-  name = "${var.environment}-logs"
+  name = "${var.namespace}-logs"
 
   tags = {
-    Application = var.environment
+    Application = var.namespace
   }
 }
 
 resource "aws_ecs_task_definition" "aws-ecs-task-definition" {
-  family                   = "${var.environment}-task-definition"
+  family                   = "${var.namespace}-task-definition"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 512
@@ -28,34 +28,38 @@ resource "aws_ecs_task_definition" "aws-ecs-task-definition" {
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   # task_role_arn = 
 
-  container_definitions = jsonencode([{
-    name      = var.environment,
-    image     = "${data.aws_ecr_repository.repo.repository_url}:${var.ecr_tag}",
-    essential = true,
-    logConfiguration = {
-      logDriver = "awslogs",
-      options = {
-        awslogs-group         = aws_cloudwatch_log_group.ecs-log-group.name
-        awslogs-region        = var.region
-        awslogs-stream-prefix = "ecs-liam"
-        awslogs-create-group  = "true"
+  container_definitions = jsonencode([
+    {
+      name      = var.namespace,
+      image     = "${data.aws_ecr_repository.repo.repository_url}:${var.ecr_tag}",
+      essential = true,
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs-log-group.name
+          awslogs-region        = var.region
+          awslogs-stream-prefix = "ecs-liam"
+          awslogs-create-group  = "true"
+        }
       }
+      portMappings = [
+        {
+          protocol      = "tcp"
+          containerPort = var.app_port
+          hostPort      = var.app_port
+        }
+      ],
+      environment = var.environment_variables,
+      secrets = [for secret in var.parameter_store_secrets :
+      tomap({ name = secret.name, valueFrom = secret.arn })],
+      "cpu" : 256,
+      "memory" : 512
     }
-    portMappings = [{
-      protocol      = "tcp"
-      containerPort = var.app_port
-      hostPort      = var.app_port
-    }],
-    environment = var.environment_variables,
-    secrets = [for secret in var.parameter_store_secrets :
-    tomap({ name = secret.name, valueFrom = secret.arn })],
-    "cpu" : 256,
-    "memory" : 512
-  }])
+  ])
 }
 
 resource "aws_ecs_service" "main" {
-  name            = "${var.environment}-ecs-service"
+  name            = "${var.namespace}-ecs-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.aws-ecs-task-definition.arn
   desired_count   = var.desired_count
@@ -69,7 +73,7 @@ resource "aws_ecs_service" "main" {
 
   load_balancer {
     target_group_arn = var.alb_target_group_arn
-    container_name   = var.environment
+    container_name   = var.namespace
     container_port   = var.app_port
   }
 }

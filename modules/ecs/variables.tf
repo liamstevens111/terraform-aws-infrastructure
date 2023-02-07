@@ -2,10 +2,6 @@ variable "namespace" {
   type = string
 }
 
-variable "environment" {
-  type = string
-}
-
 variable "alb_target_group_arn" {
   type = string
 }
