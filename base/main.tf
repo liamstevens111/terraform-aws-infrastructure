@@ -11,25 +11,28 @@ terraform {
   required_version = "~> 1.3"
 }
 
+locals {
+  namespace = "${var.app_name}-${var.environment}"
+}
+
 module "network" {
   source          = "../modules/network"
   base_cidr_block = "10.0.0.0/16"
 
-  namespace = var.namespace
+  namespace = local.namespace
 }
 
 module "s3" {
   source      = "../modules/s3"
-  namespace   = var.namespace
-  bucket_name = var.s3_main_bucket_name
+  namespace   = local.namespace
+  bucket_name = "${var.app_name}-${var.s3_main_bucket_name}"
 }
 
 module "rds" {
   source                 = "../modules/db"
   username               = var.rds_username
-  db_name                = var.rds_database_name
   db_password            = var.rds_password
-  namespace              = var.namespace
+  namespace              = local.namespace
   instance_class         = var.rds_instance_type
   subnet_ids             = module.network.public_subnet_ids
   vpc_security_group_ids = [module.network.rds_security_group_id]
@@ -38,7 +41,7 @@ module "rds" {
 module "elasticache" {
   source = "../modules/elasticache"
 
-  namespace = var.namespace
+  namespace = local.namespace
   #TODO: Replace with private subnet groups when implemented
   subnet_ids         = module.network.public_subnet_ids
   security_group_ids = [module.network.elasticache_security_group_id]
@@ -50,11 +53,10 @@ module "elasticache" {
 module "ssm" {
   source = "../modules/ssm"
 
-  environment = var.environment
   parameters = {
-    "/${var.environment}/DATABASE_URL" : "postgresql://${var.rds_username}:${var.rds_password}@${module.rds.rds_endpoint}/${var.rds_database_name}",
-    "/${var.environment}/REDIS_ENDPOINT_ADDRESS" : module.elasticache.primary_endpoint_address,
-    "/${var.environment}/SECRET_KEY_BASE" : var.secret_key_base
+    "/${local.namespace}/DATABASE_URL" : "postgresql://${var.rds_username}:${var.rds_password}@${module.rds.rds_endpoint}/${local.namespace}-db",
+    "/${local.namespace}/REDIS_ENDPOINT_ADDRESS" : module.elasticache.primary_endpoint_address,
+    "/${local.namespace}/SECRET_KEY_BASE" : var.secret_key_base
   }
 }
 
@@ -62,8 +64,7 @@ module "ecs" {
   source = "../modules/ecs"
 
   region               = var.region
-  namespace            = var.namespace
-  environment          = var.environment
+  namespace            = local.namespace
   app_port             = var.app_port
   ecr_repo_name        = var.ecr_repo_name
   ecr_tag              = var.ecr_tag

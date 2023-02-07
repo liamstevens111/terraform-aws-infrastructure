@@ -3,17 +3,12 @@ variable "app_name" {
 }
 
 variable "environment" {
-  description = "The application environment, used to tag the resources, e.g. `acme-web-staging`"
+  description = "The application environment, used to tag the resources, e.g. `staging`"
   type        = string
 }
 
 variable "owner" {
   description = "The owner of the infrastructure, used to tag the resources, e.g. `acme-web`"
-  type        = string
-}
-
-variable "namespace" {
-  description = "The namespace for the application infrastructure on AWS, e.g. acme-web"
   type        = string
 }
 
@@ -40,11 +35,6 @@ variable "aws_secret_key" {
 
 variable "rds_instance_type" {
   description = "The RDB instance type"
-  type        = string
-}
-
-variable "rds_database_name" {
-  description = "RDS database name"
   type        = string
 }
 
