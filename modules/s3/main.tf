@@ -8,7 +8,8 @@ resource "aws_s3_bucket" "main" {
 
 resource "aws_s3_bucket_cors_configuration" "main" {
   bucket = aws_s3_bucket.main.id
-  #TODO: Edit this when phoenix app up to only allow that domain?
+
+  #TODO: Edit this for an app to only allow that particular domain?
   cors_rule {
     allowed_methods = ["GET"]
     allowed_origins = ["*"]
