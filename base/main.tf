@@ -77,6 +77,7 @@ module "ecs" {
   web_container_memory = var.ecs.web_container_memory
 
   alb_target_group_arn = module.network.alb_target_group_arn
+
   #TODO: Replace with private subnet groups when implemented
   subnets         = module.network.public_subnet_ids
   security_groups = [module.network.alb_security_group_id, module.network.ecs_security_group_id]
