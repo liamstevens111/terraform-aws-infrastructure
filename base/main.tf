@@ -16,20 +16,22 @@ locals {
 }
 
 module "network" {
-  source          = "../modules/network"
-  base_cidr_block = "10.0.0.0/16"
+  source = "../modules/network"
 
-  namespace = local.namespace
+  base_cidr_block = "10.0.0.0/16"
+  namespace       = local.namespace
 }
 
 module "s3" {
-  source      = "../modules/s3"
+  source = "../modules/s3"
+
   namespace   = local.namespace
   bucket_name = "${var.app_name}-${var.s3_main_bucket_name}"
 }
 
 module "rds" {
-  source                 = "../modules/db"
+  source = "../modules/db"
+
   username               = var.rds_username
   db_password            = var.rds_password
   namespace              = "${var.owner}${var.environment}"

@@ -1,1 +1,1 @@
-This contains all settings related to storage of data, such as RDS
+Contains all settings related to storage of data, such as RDS
