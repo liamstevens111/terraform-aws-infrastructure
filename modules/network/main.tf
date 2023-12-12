@@ -93,11 +93,6 @@ resource "aws_route_table" "private" {
   }
 }
 
-resource "aws_route" "private_local" {
-  route_table_id         = aws_route_table.private.id
-  destination_cidr_block = var.base_cidr_block
-}
-
 resource "aws_route_table_association" "private_1" {
   route_table_id = aws_route_table.private.id
   subnet_id      = aws_subnet.private_1.id
