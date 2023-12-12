@@ -7,7 +7,7 @@ resource "aws_db_instance" "main" {
   instance_class         = var.instance_class
   username               = var.username
   password               = var.db_password
-  parameter_group_name   = "default.postgres14"
+  parameter_group_name   = "default.postgres15"
   skip_final_snapshot    = true
   vpc_security_group_ids = var.vpc_security_group_ids
   db_subnet_group_name   = aws_db_subnet_group.db-subnet.name
