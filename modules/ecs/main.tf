@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "ecs_task_execution_policy_ssm" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
+  name = "ecsTaskExecutionRoleMain"
 
   assume_role_policy = <<EOF
 {
