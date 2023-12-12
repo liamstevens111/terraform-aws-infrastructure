@@ -36,7 +36,7 @@ module "rds" {
   db_password            = var.rds_password
   namespace              = "${var.owner}${var.environment}"
   instance_class         = var.rds_instance_type
-  subnet_ids             = module.network.public_subnet_ids
+  subnet_ids             = module.network.private_subnet_ids
   vpc_security_group_ids = [module.network.rds_security_group_id]
 }
 
@@ -44,7 +44,7 @@ module "elasticache" {
   source = "../modules/elasticache"
 
   namespace          = local.namespace
-  subnet_ids         = module.network.public_subnet_ids
+  subnet_ids         = module.network.private_subnet_ids
   security_group_ids = [module.network.elasticache_security_group_id]
 
   node_type       = var.elasticache_node_type
@@ -78,7 +78,7 @@ module "ecs" {
   alb_target_group_arn = module.network.alb_target_group_arn
 
   #TODO: Replace with private subnet groups when implemented
-  subnets         = module.network.public_subnet_ids
+  subnets         = module.network.private_subnet_ids
   security_groups = [module.network.alb_security_group_id, module.network.ecs_security_group_id]
 
   s3_bucket_name = module.s3.bucket_name
